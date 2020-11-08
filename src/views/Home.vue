@@ -1,18 +1,60 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>郵便番号から該当地域を検索する</h1>
+    <input v-model="postcode" type="text" maxlength="7" placeholder="郵便番号を入力" />
+    <button @click="searchAdressInfo" type="submit">検索</button>
+    <p>※ 3桁以上の数値を入力してください（例：1500001）</p>
+    <h2>検索結果：{{ allAdress }}</h2>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import axios from "axios";
 export default {
-  name: 'Home',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      postcode: "",
+      allAdress: ""
+    };
+  },
+  async created() {
+    let item = await axios.get(
+      `https://apis.postcode-jp.com/api/v4/postcodes/${this.postcode} \
+      -G -v \
+      -d "fields=allAddress"`
+    );
+    this.data = item.data;
+    this.postcode = this.data.allAdress;
   }
-}
+};
 </script>
+
+<style scoped>
+.home h1 {
+  width: 50%;
+  padding: 20px;
+  margin-left: 10px;
+  color: #CC0000;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 4px solid #CC0000;
+  border-width: 80%;
+}
+.home p, h2 {
+  margin-left: 10px;
+  padding: 10px;
+}
+input {
+  padding: 5px;
+  margin: 10px 5px 10px 20px;
+}
+button {
+  padding: 2px 5px;
+  background: #fff;
+  color: #000;
+}
+button:hover {
+  background: #000;
+  color: #fff;
+}
+</style>
